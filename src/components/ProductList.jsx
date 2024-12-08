@@ -5,7 +5,8 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
 
-  const BASE_URL = process.env.REACT_APP_API_URL;//|| 'http://localhost:5000'; // デフォルトURLを指定
+
+  const BASE_URL = process.env.REACT_APP_API_URL; // 環境変数からURLを取得
 
 
   useEffect(() => {
