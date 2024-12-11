@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { useReactToPrint } from 'react-to-print';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
-  const printRef = useRef(); // Refを追加
+  const printRef = useRef(); // 印刷対象の要素を参照する ref を作成
 
-  const BASE_URL = process.env.REACT_APP_API_URL;
+  const BASE_URL = process.env.REACT_APP_API_URL || 'https://example.com/api'; // 必要に応じてデフォルトURLを設定
 
   // 製品リストの取得
   useEffect(() => {
@@ -37,9 +37,9 @@ const ProductList = () => {
       });
   };
 
-  // 印刷用の関数
+  // 印刷機能の設定
   const handlePrint = useReactToPrint({
-    content: () => printRef.current,
+    content: () => printRef.current, // 印刷対象の要素を指定
   });
 
   // エラーメッセージの表示
@@ -58,7 +58,7 @@ const ProductList = () => {
   return (
     <div className="card shadow p-4">
       <h4 className="text-center text-info mb-4">製品一覧</h4>
-      {/* 印刷対象部分をRefで囲む */}
+      {/* 印刷対象の要素 */}
       <div ref={printRef}>
         <ul className="list-group">
           {sortedProducts.map((product) => (
