@@ -5,10 +5,10 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
 
+  // 環境変数が使えない場合は直接URLを指定
+  const BASE_URL = "https://hs-product-backend-h7daazbef5a2fzaa.canadacentral-01.azurewebsites.net";
 
-  const BASE_URL = process.env.REACT_APP_API_URL; // 環境変数からURLを取得
-
-
+  // 製品リストの取得
   useEffect(() => {
     axios
       .get(`${BASE_URL}/products`)
@@ -17,17 +17,18 @@ const ProductList = () => {
       })
       .catch((err) => {
         setError(err.response?.data?.message || '製品データの取得に失敗しました');
-        console.error(err);
+        console.error('Error fetching products:', err);
       });
   }, [BASE_URL]);
 
+  // 製品の削除
   const deleteProduct = (id) => {
     if (!window.confirm('この製品を削除しますか？')) return;
 
     axios
       .delete(`${BASE_URL}/products/${id}`)
       .then(() => {
-        setProducts(products.filter((product) => product.ProductId !== id));
+        setProducts((prevProducts) => prevProducts.filter((product) => product.ProductId !== id));
       })
       .catch((err) => {
         console.error('Error deleting product:', err);
@@ -35,14 +36,17 @@ const ProductList = () => {
       });
   };
 
+  // エラーメッセージの表示
   if (error) {
     return <div className="alert alert-danger">{error}</div>;
   }
 
+  // 製品が存在しない場合の表示
   if (products.length === 0) {
     return <div className="alert alert-info">製品が存在しません。</div>;
   }
 
+  // 製品リストをID順にソート
   const sortedProducts = [...products].sort((a, b) => a.ProductId - b.ProductId);
 
   return (
