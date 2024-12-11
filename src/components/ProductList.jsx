@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useReactToPrint } from 'react-to-print';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
-  const printRef = useRef();
+  const printRef = useRef(); // Refを追加
 
   const BASE_URL = process.env.REACT_APP_API_URL;
 
@@ -37,11 +37,9 @@ const ProductList = () => {
       });
   };
 
-  // 印刷機能
+  // 印刷用の関数
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    documentTitle: '製品一覧',
-    onAfterPrint: () => console.log('印刷完了'),
   });
 
   // エラーメッセージの表示
@@ -58,9 +56,10 @@ const ProductList = () => {
   const sortedProducts = [...products].sort((a, b) => a.ProductId - b.ProductId);
 
   return (
-    <div>
-      <div className="card shadow p-4" ref={printRef}>
-        <h4 className="text-center text-info mb-4">製品一覧</h4>
+    <div className="card shadow p-4">
+      <h4 className="text-center text-info mb-4">製品一覧</h4>
+      {/* 印刷対象部分をRefで囲む */}
+      <div ref={printRef}>
         <ul className="list-group">
           {sortedProducts.map((product) => (
             <li
@@ -80,7 +79,8 @@ const ProductList = () => {
           ))}
         </ul>
       </div>
-      <button className="btn btn-primary mt-4" onClick={handlePrint}>
+      {/* 印刷ボタン */}
+      <button onClick={handlePrint} className="btn btn-primary mt-4">
         印刷
       </button>
     </div>
