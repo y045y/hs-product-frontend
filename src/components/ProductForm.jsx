@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const ProductForm = ({ onProductAdded }) => {
   const [productName, setProductName] = useState('');
-  const [categoryId, setCategoryId] = useState(0);
+  const [categoryId, setCategoryId] = useState('');
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
+  const [categories, setCategories] = useState([]); // カテゴリ一覧
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const BASE_URL = process.env.REACT_APP_API_URL;
+  const BASE_URL = process.env.REACT_APP_API_URL || "https://hs-product-backend-h7daazbef5a2fzaa.canadacentral-01.azurewebsites.net";
 
+  useEffect(() => {
+    // カテゴリ一覧を取得
+    axios
+      .get(`${BASE_URL}/categories`)
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((err) => {
+        console.error('カテゴリデータの取得に失敗しました:', err.message);
+      });
+  }, [BASE_URL]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,8 +30,8 @@ const ProductForm = ({ onProductAdded }) => {
       alert('価格は0以上の値を入力してください。');
       return;
     }
-    if (categoryId <= 0 || isNaN(categoryId)) {
-      alert('有効なカテゴリIDを入力してください。');
+    if (!categoryId) {
+      alert('カテゴリを選択してください。');
       return;
     }
 
@@ -37,12 +49,12 @@ const ProductForm = ({ onProductAdded }) => {
       .then(() => {
         onProductAdded();
         setProductName('');
-        setCategoryId(0);
+        setCategoryId('');
         setPrice(0);
         setStock(0);
       })
       .catch((err) => {
-        console.error('Error adding product:', err);
+        console.error('製品追加に失敗しました:', err.message);
         alert('製品追加に失敗しました。もう一度お試しください。');
       })
       .finally(() => {
@@ -64,14 +76,20 @@ const ProductForm = ({ onProductAdded }) => {
         />
       </div>
       <div className="mb-3">
-        <label className="form-label">カテゴリID</label>
-        <input
-          type="number"
-          className="form-control"
+        <label className="form-label">カテゴリ</label>
+        <select
+          className="form-select"
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
           required
-        />
+        >
+          <option value="">カテゴリを選択してください</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="mb-3">
         <label className="form-label">価格</label>
