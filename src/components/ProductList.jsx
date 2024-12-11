@@ -7,7 +7,7 @@ const ProductList = () => {
   const [error, setError] = useState(null);
   const printRef = useRef(); // 印刷対象の要素を参照する ref を作成
 
-  const BASE_URL = process.env.REACT_APP_API_URL || 'https://example.com/api'; // 必要に応じてデフォルトURLを設定
+  const BASE_URL = process.env.REACT_APP_API_URL || 'https://example.com/api';
 
   // 製品リストの取得
   useEffect(() => {
@@ -22,24 +22,9 @@ const ProductList = () => {
       });
   }, [BASE_URL]);
 
-  // 製品の削除
-  const deleteProduct = (id) => {
-    if (!window.confirm('この製品を削除しますか？')) return;
-
-    axios
-      .delete(`${BASE_URL}/products/${id}`)
-      .then(() => {
-        setProducts((prevProducts) => prevProducts.filter((product) => product.ProductId !== id));
-      })
-      .catch((err) => {
-        console.error('Error deleting product:', err);
-        alert('製品削除に失敗しました。');
-      });
-  };
-
   // 印刷機能の設定
   const handlePrint = useReactToPrint({
-    content: () => printRef.current, // 印刷対象の要素を指定
+    content: () => printRef.current, // 印刷対象を指定
   });
 
   // エラーメッセージの表示
@@ -52,16 +37,13 @@ const ProductList = () => {
     return <div className="alert alert-info">製品が存在しません。</div>;
   }
 
-  // 製品リストをID順にソート
-  const sortedProducts = [...products].sort((a, b) => a.ProductId - b.ProductId);
-
   return (
     <div className="card shadow p-4">
       <h4 className="text-center text-info mb-4">製品一覧</h4>
       {/* 印刷対象の要素 */}
       <div ref={printRef}>
         <ul className="list-group">
-          {sortedProducts.map((product) => (
+          {products.map((product) => (
             <li
               key={product.ProductId}
               className="list-group-item d-flex justify-content-between align-items-center"
@@ -69,12 +51,6 @@ const ProductList = () => {
               <span>
                 {product.ProductName} - ¥{Number(product.Price).toLocaleString('ja-JP')}
               </span>
-              <button
-                onClick={() => deleteProduct(product.ProductId)}
-                className="btn btn-danger btn-sm"
-              >
-                削除
-              </button>
             </li>
           ))}
         </ul>
