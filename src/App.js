@@ -4,6 +4,9 @@ import ProductForm from './components/ProductForm';
 import TestAPIConnection from './components/TestAPIConnection'; // TestAPIConnectionを利用
 
 const App = () => {
+  console.log("API URL from environment:", process.env.REACT_APP_API_URL);
+
+const App = () => {
   const [updateKey, setUpdateKey] = useState(0);
 
   // 製品が追加された際にリストを更新
