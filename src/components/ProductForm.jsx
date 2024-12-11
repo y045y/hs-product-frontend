@@ -6,22 +6,23 @@ const ProductForm = ({ onProductAdded }) => {
   const [categoryId, setCategoryId] = useState('');
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
-  const [categories, setCategories] = useState([]); // カテゴリ一覧
+  const [categories, setCategories] = useState([]); // カテゴリデータの状態
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const BASE_URL = process.env.REACT_APP_API_URL || "https://hs-product-backend-h7daazbef5a2fzaa.canadacentral-01.azurewebsites.net";
+  const BASE_URL = "https://hs-product-backend-h7daazbef5a2fzaa.canadacentral-01.azurewebsites.net";
 
+  // カテゴリデータを取得
   useEffect(() => {
-    // カテゴリ一覧を取得
     axios
       .get(`${BASE_URL}/categories`)
       .then((response) => {
-        setCategories(response.data);
+        console.log("Categories fetched:", response.data);
+        setCategories(response.data); // カテゴリデータを保存
       })
       .catch((err) => {
-        console.error('カテゴリデータの取得に失敗しました:', err.message);
+        console.error("Error fetching categories:", err.message);
       });
-  }, [BASE_URL]);
+  }, []); // 最初の1回だけ実行
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,6 +31,7 @@ const ProductForm = ({ onProductAdded }) => {
       alert('価格は0以上の値を入力してください。');
       return;
     }
+
     if (!categoryId) {
       alert('カテゴリを選択してください。');
       return;
@@ -54,7 +56,7 @@ const ProductForm = ({ onProductAdded }) => {
         setStock(0);
       })
       .catch((err) => {
-        console.error('製品追加に失敗しました:', err.message);
+        console.error('Error adding product:', err);
         alert('製品追加に失敗しました。もう一度お試しください。');
       })
       .finally(() => {
@@ -85,8 +87,8 @@ const ProductForm = ({ onProductAdded }) => {
         >
           <option value="">カテゴリを選択してください</option>
           {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
+            <option key={category.CategoryId} value={category.CategoryId}>
+              {category.CategoryName}
             </option>
           ))}
         </select>
