@@ -3,11 +3,11 @@ import axios from 'axios';
 import { useReactToPrint } from 'react-to-print';
 
 const ProductList = () => {
-  const [products, setProducts] = useState([]);
-  const [error, setError] = useState(null);
-  const printRef = useRef(); // 印刷対象の要素を参照する ref を作成
+  const [products, setProducts] = useState([]); // 製品リストの状態管理
+  const [error, setError] = useState(null); // エラーの状態管理
+  const printRef = useRef(); // 印刷対象の参照
 
-  const BASE_URL = process.env.REACT_APP_API_URL || 'https://example.com/api';
+  const BASE_URL = process.env.REACT_APP_API_URL || 'https://example.com/api'; // 環境変数またはデフォルトURL
 
   // 製品リストの取得
   useEffect(() => {
@@ -22,7 +22,24 @@ const ProductList = () => {
       });
   }, [BASE_URL]);
 
-  // 印刷機能の設定
+  // 製品の削除機能
+  const deleteProduct = (id) => {
+    if (!window.confirm('この製品を削除しますか？')) return;
+
+    axios
+      .delete(`${BASE_URL}/products/${id}`)
+      .then(() => {
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product.ProductId !== id)
+        );
+      })
+      .catch((err) => {
+        console.error('Error deleting product:', err);
+        alert('製品削除に失敗しました。');
+      });
+  };
+
+  // 印刷機能
   const handlePrint = useReactToPrint({
     content: () => printRef.current, // 印刷対象を指定
   });
@@ -40,6 +57,7 @@ const ProductList = () => {
   return (
     <div className="card shadow p-4">
       <h4 className="text-center text-info mb-4">製品一覧</h4>
+
       {/* 印刷対象の要素 */}
       <div ref={printRef}>
         <ul className="list-group">
@@ -49,12 +67,20 @@ const ProductList = () => {
               className="list-group-item d-flex justify-content-between align-items-center"
             >
               <span>
-                {product.ProductName} - ¥{Number(product.Price).toLocaleString('ja-JP')}
+                {product.ProductName} - ¥
+                {Number(product.Price).toLocaleString('ja-JP')}
               </span>
+              <button
+                onClick={() => deleteProduct(product.ProductId)}
+                className="btn btn-danger btn-sm"
+              >
+                削除
+              </button>
             </li>
           ))}
         </ul>
       </div>
+
       {/* 印刷ボタン */}
       <button onClick={handlePrint} className="btn btn-primary mt-4">
         印刷
