@@ -5,8 +5,8 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
 
-  // 環境変数が使えない場合は直接URLを指定
-  const BASE_URL = "https://hs-product-backend-h7daazbef5a2fzaa.canadacentral-01.azurewebsites.net";
+
+  const BASE_URL = process.env.REACT_APP_API_URL;
 
   // 製品リストの取得
   useEffect(() => {
